@@ -1,0 +1,8 @@
+﻿@model int
+@{
+    string xPicPath = string.Format("img/Rotten/{0}.jpg", Model);
+}
+<div class="row">
+    <img src="@xPicPath" class="col-md-12" style="opacity: 0.4; max-height: 550px; max-width: 600px; display:block; margin:auto;"/>
+    @*<img src="~/img/Rotten/1.jpg" class="col-md-12" />*@
+</div>

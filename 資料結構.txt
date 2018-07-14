@@ -1,0 +1,180 @@
+CREATE TABLE [dbo].[Nation] (
+    [ID]   VARCHAR (3)   NOT NULL,
+    [Name] NVARCHAR (10) NOT NULL,
+    PRIMARY KEY CLUSTERED ([ID] ASC)
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_Nation_Column]
+    ON [dbo].[Nation]([ID] ASC);
+
+--=====
+
+CREATE TABLE [dbo].[Supplier] (
+    [ID]       VARCHAR (20)  NOT NULL,
+    [Name]     NVARCHAR (30) NOT NULL,
+    [NationID] VARCHAR (3)   NOT NULL,
+    PRIMARY KEY CLUSTERED ([ID] ASC),
+    CONSTRAINT [FK_Supplier_Nation] FOREIGN KEY ([NationID]) REFERENCES [dbo].[Nation] ([ID])
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_Supplier_ID]
+    ON [dbo].[Supplier]([ID] ASC);
+
+--=====
+
+CREATE TABLE [dbo].[Commodity] (
+    [ID]                VARCHAR (12)    NOT NULL,
+    [Name]              NVARCHAR (20)   NOT NULL,
+    [Style]             NVARCHAR (10)   NOT NULL,
+    [NationID]          VARCHAR (3)     NOT NULL,
+    [SupplierID]        VARCHAR (20)    NOT NULL,
+    [SupplierProductNo] VARCHAR (20)    NULL,
+    [WholesalePrice]    DECIMAL (18, 0) NOT NULL,
+    [RetailPrice]       DECIMAL (18, 0) NOT NULL,
+    [Remark]            NVARCHAR (50)   NULL,
+    PRIMARY KEY CLUSTERED ([ID] ASC),
+    CONSTRAINT [FK_Commodity_Nation] FOREIGN KEY ([NationID]) REFERENCES [dbo].[Nation] ([ID]),
+    CONSTRAINT [FK_Commodity_SupplierBase] FOREIGN KEY ([SupplierID]) REFERENCES [dbo].[Supplier] ([ID])
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_Commodity_ID]
+    ON [dbo].[Commodity]([ID] ASC);
+
+--=====
+
+CREATE TABLE [dbo].[DeliveryType] (
+    [ID]   VARCHAR (20)  NOT NULL,
+    [Name] NVARCHAR (20) NOT NULL,
+    PRIMARY KEY CLUSTERED ([ID] ASC)
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_DeliveryType_Column]
+    ON [dbo].[DeliveryType]([ID] ASC);
+
+--=====
+
+CREATE TABLE [dbo].[Trading] (
+    [TransNo]       VARCHAR (12)    NOT NULL,
+    [TradeDate]     DATE            NOT NULL,
+    [Buyer]         VARCHAR (20)    NOT NULL,
+    [CommodityID]   VARCHAR (12)    NOT NULL,
+    [TradeQuantity] DECIMAL (18, 0) NOT NULL,
+    [TradeAmount]   DECIMAL (18, 0) NOT NULL,
+    [ShipperNo]     VARCHAR (12)    NULL,
+    [Remark]        NVARCHAR (50)   NULL,
+    PRIMARY KEY CLUSTERED ([TransNo] ASC),
+    CONSTRAINT [FK_Trading_Commodity] FOREIGN KEY ([CommodityID]) REFERENCES [dbo].[Commodity] ([ID])
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_Trading_Trade]
+    ON [dbo].[Trading]([TradeDate] ASC, [TransNo] ASC);
+
+--=====
+
+CREATE TABLE [dbo].[Shipper] (
+    [TransNo]     VARCHAR (12)    NOT NULL,
+    [TradeDate]   DATE            NOT NULL,
+    [Buyer]       NVARCHAR (20)   NOT NULL,
+    [TradeAmount] DECIMAL (18, 0) NOT NULL,
+    [Fee]         DECIMAL (18, 0) NOT NULL,
+    [Delivery]    VARCHAR (20)    NOT NULL,
+    [Remark]      NVARCHAR (50)   NULL,
+    PRIMARY KEY CLUSTERED ([TransNo] ASC),
+    CONSTRAINT [FK_Shipper_DeliveryType] FOREIGN KEY ([Delivery]) REFERENCES [dbo].[DeliveryType] ([ID])
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_Shipper_Trade]
+    ON [dbo].[Shipper]([TradeDate] ASC, [TransNo] ASC);
+
+--=====
+
+CREATE TABLE [dbo].[Order] (
+    [TransNo]       VARCHAR (12)    NOT NULL,
+    [TradeDate]     DATE            NOT NULL,
+    [CommodityID]   VARCHAR (12)    NOT NULL,
+    [TradeQuantity] DECIMAL (18, 0) NOT NULL,
+    [TradeAmount]   DECIMAL (18, 0) NOT NULL,
+    [ReceiptNo]     VARCHAR (12)    NULL,
+    [PurchaseNo]    VARCHAR (12)    NULL,
+    [Remark]        NVARCHAR (50)   NULL,
+    PRIMARY KEY CLUSTERED ([TransNo] ASC),
+    CONSTRAINT [FK_Order_Commodity] FOREIGN KEY ([CommodityID]) REFERENCES [dbo].[Commodity] ([ID])
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_Order_Column]
+    ON [dbo].[Order]([TradeDate] ASC, [TransNo] ASC);
+
+--=====
+
+CREATE TABLE [dbo].[Receipt] (
+    [TransNo]     VARCHAR (12)    NOT NULL,
+    [TradeDate]   DATE            NOT NULL,
+    [TradeAmount] DECIMAL (18, 0) NOT NULL,
+    [Remark]      NVARCHAR (50)   NULL,
+    PRIMARY KEY CLUSTERED ([TransNo] ASC)
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_Receipt_Column]
+    ON [dbo].[Receipt]([TradeDate] ASC, [TransNo] ASC);
+
+--=====
+
+CREATE TABLE [dbo].[Purchase] (
+    [TransNo]   VARCHAR (12)    NOT NULL,
+    [TradeDate] DATE            NOT NULL,
+    [Fee]       DECIMAL (18, 0) NOT NULL,
+    [Remark]    NVARCHAR (50)   NULL,
+    PRIMARY KEY CLUSTERED ([TransNo] ASC)
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_Purchase_Column]
+    ON [dbo].[Purchase]([TradeDate] ASC, [TransNo] ASC);
+
+--=====
+
+CREATE TABLE [dbo].[CashFlow] (
+    [TradeDate] DATE            NOT NULL,
+    [Income]    DECIMAL (18, 0) NOT NULL,
+    [Expenses]  DECIMAL (18, 0) NOT NULL,
+    [Balance]   DECIMAL (18, 0) NOT NULL,
+    PRIMARY KEY CLUSTERED ([TradeDate] ASC)
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_CashFlow_Column]
+    ON [dbo].[CashFlow]([TradeDate] ASC);
+
+--=====
+
+CREATE TABLE [dbo].[CommodityMast] (
+    [TradeDate]   DATE         NOT NULL,
+    [CommodityID] VARCHAR (12) NOT NULL,
+    [Quantity]    DECIMAL (18) NOT NULL,
+    PRIMARY KEY CLUSTERED ([TradeDate] ASC, [CommodityID] ASC),
+    CONSTRAINT [FK_CommodityMast_Commodity] FOREIGN KEY ([CommodityID]) REFERENCES [dbo].[Commodity] ([ID])
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_CommodityMast_Column]
+    ON [dbo].[CommodityMast]([TradeDate] ASC, [CommodityID] ASC);
+

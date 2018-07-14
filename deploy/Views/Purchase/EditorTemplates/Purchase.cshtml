@@ -1,0 +1,18 @@
+﻿@model Purchase
+
+<div class="row">
+    <div class="col-md-6">
+        @Html.TextBoxBuilder(m => m.TransNo, "進貨編號")
+        @Html.DateBoxBuilder(m => m.TradeDate, "進貨日期")
+    </div>
+    <div class="col-md-6">
+        @Html.NumberBoxBuilder(m => m.Fee, "運費")
+        @Html.TextAreaBuilder(m => m.Remark, "備註")
+    </div>
+</div>
+
+<style>
+    #Remark {
+        resize: vertical;
+    }
+</style>

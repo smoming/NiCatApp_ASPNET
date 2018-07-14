@@ -1,0 +1,23 @@
+﻿@model Commodity
+
+<div class="row">
+    <div class="col-md-6">
+        @Html.TextBoxBuilder(m => m.ID, "代碼")
+        @Html.TextBoxBuilder(m => m.Name, "名稱")
+        @Html.TextBoxBuilder(m => m.Style, "樣式")
+        @Html.DropDownListBuilder(m => m.NationID, Shared.NationList(), "國家")
+        @Html.DropDownListBuilder(m => m.SupplierID, Shared.SupplierList(), "供應商")
+    </div>
+    <div class="col-md-6">
+        @Html.TextBoxBuilder(m => m.SupplierProductNo, "供應商商品編號")
+        @Html.NumberBoxBuilder(m => m.WholesalePrice, "批發價")
+        @Html.NumberBoxBuilder(m => m.RetailPrice, "零售價")
+        @Html.TextAreaBuilder(m => m.Remark, "備註")
+    </div>
+</div>
+
+<style>
+    #Remark {
+        resize: vertical;
+    }
+</style>

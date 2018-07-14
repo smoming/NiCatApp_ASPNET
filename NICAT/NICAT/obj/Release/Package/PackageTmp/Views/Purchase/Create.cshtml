@@ -1,0 +1,44 @@
+﻿@model List<Order>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12" style="text-align:end;">
+            @if (Model.IsNotEmpty())
+            {
+                @Html.ButtonBuilder(ButtonType.button, "btnConfirm", "確認")
+            }
+            @Html.ButtonBuilder(ButtonType.button, "btnConfirmCancel", "取消")
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive">
+                <table id="list" class="table table-bordered table-striped table-hover table-condensed">
+                    <thead>
+                        <tr>
+                            <th style="text-align:center;"><input type="checkbox" id="checkAll" /></th>
+                            <th>交易編號</th>
+                            <th>交易日期</th>
+                            <th>商品代碼</th>
+                            <th>數量</th>
+                            <th>金額</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var it in Model)
+                        {
+                            <tr class="alert-info">
+                                <td style="text-align:center;"><input type="checkbox" data-transno=@it.TransNo /></td>
+                                <td>@it.TransNo</td>
+                                <td>@it.TradeDate.ToString("yyyy/MM/dd")</td>
+                                <td>@string.Format("{0} - {1}", it.Commodity.Name, it.Commodity.Style)</td>
+                                <td>@it.TradeQuantity</td>
+                                <td>@it.TradeAmount</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

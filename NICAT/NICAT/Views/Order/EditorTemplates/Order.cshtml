@@ -1,0 +1,26 @@
+﻿@model Order
+
+<div class="container">
+    <div class="form-row">
+        <div class="col-md-3">
+            @Html.TextBoxBuilder(m => m.TransNo, "下單編號")
+            @Html.DateBoxBuilder(m => m.TradeDate, "下單日期")
+        </div>
+        <div class="col-md-3">
+            @Html.DropDownListBuilder(m => m.CommodityID, Shared.CommodityList(), "商品代碼")
+            @Html.NumberBoxBuilder(m => m.TradeQuantity, "數量")
+            @Html.NumberBoxBuilder(m => m.TradeAmount, "金額")
+        </div>
+        <div class="col-md-3">
+            @Html.TextBoxBuilder(m => m.ReceiptNo, "付款編號")
+            @Html.TextBoxBuilder(m => m.PurchaseNo, "進貨編號")
+            @Html.TextAreaBuilder(m => m.Remark, "備註")
+        </div>
+    </div>
+</div>
+
+<style>
+    #Remark {
+        resize: vertical;
+    }
+</style>

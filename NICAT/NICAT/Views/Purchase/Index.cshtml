@@ -1,0 +1,146 @@
+﻿@model PurchaseQueryViewModel
+
+<div class="row">
+    @using (Ajax.BeginForm(new AjaxOptions()
+    {
+        Url = Url.Action("Grid"),
+        UpdateTargetId = "GridV",
+        OnSuccess = "SelectReady"
+    }))
+    {
+        @Html.AccordionBuilder(@<text>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-2">
+                        @Html.DateBoxBuilder(m => m.TradeDate_S, "進貨日期(起)")
+                    </div>
+                    <div class="col-md-2">
+                        @Html.DateBoxBuilder(m => m.TradeDate_E, "進貨日期(迄)")
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        @Html.ButtonBuilder(ButtonType.submit, "btnQuery", "查詢")
+                    </div>
+                </div>
+            </div>
+        </text>, "查詢")
+    }
+</div>
+<div class="row" style="margin-top: 0.5%;" id="CrateBlock">
+    <div class="col-md-2">@Html.ButtonBuilder(ButtonType.button, "btnCreate", "新增")</div>
+</div>
+<div class="row" style="margin-top: 0.5%;">
+    <div id="GridV" class="col-md-6"></div>
+    <div id="EditV" class="col-md-5" style="margin-left: 1%;"></div>
+</div>
+<div class="row" style="margin-top: 0.5%;">
+    <div id="OrderGridV" class="col-md-12"></div>
+</div>
+
+<script>
+    var EditV, GridV, OrderGridV;
+
+    $(function () {
+        EditV = $('#EditV');
+        GridV = $('#GridV');
+        OrderGridV = $('#OrderGridV');
+
+        loadGrid();
+
+        $('#btnCreate').on('click', function () {
+            //GridV.empty();
+            OrderGridV.load('@Url.Action("Create")', CreateReady);
+        });
+    });
+
+    function loadGrid() {
+        //GridV.load('@Url.Action("Grid")', SelectReady);
+        claerEdit();
+        $('#btnQuery').click();
+    }
+
+    function CreateReady() {
+        disabledBtnConfirm();
+        $('#btnConfirm').on('click', function () {
+            var xNoList = Array();
+            $('#list tbody input[type=checkbox]:checked').each(function (i, v) {
+                xNoList.push($(v).data('transno'));
+            });
+            EditV.load('@Url.Action("CreateConfirm")', { xTransNos: xNoList }, ConfirmReady);
+            hiddenCrateBlock(true);
+        });
+
+        $('#checkAll').on('click', function () {
+            var xChecked = $("#checkAll").prop("checked");
+            $('#list tbody input[type=checkbox]').each(function () {
+                $(this).prop("checked", xChecked);
+            });
+            disabledBtnConfirm();
+        });
+
+        $('#list tbody input[type=checkbox]').on('click', disabledBtnConfirm);
+
+        $('#btnConfirmCancel').on('click', function () {
+            OrderGridV.empty();
+            claerEdit();
+            hiddenCrateBlock(false);
+        });
+    }
+
+    function ConfirmReady() {
+        EditV.find('#TransNo').attr('readonly', true);
+        disabledCreate(true);
+        eventCancal();
+    }
+
+    function SelectReady() {
+        $('#list tbody tr').on('click', function () {
+            EditV.load('@Url.Action("Edit")', { xTransNo: $(this).find('td:eq(0)').text() }, EditReady);
+        });
+    }
+
+    function EditReady() {
+        EditV.find('#TransNo').attr('readonly', true);
+
+        eventCancal();
+        $('#btnDelete').on('click', function () {
+            $.post('@Url.Action("Delete")', { xTransNo: EditV.find('#TransNo').val() }, onSaved);
+        });
+
+        hiddenCrateBlock(true);
+    }
+
+    function onSaved(d) {
+        alert(d);
+        loadGrid();
+        claerEdit();
+    }
+
+    function claerEdit() {
+        EditV.empty();
+        OrderGridV.empty();
+        hiddenCrateBlock(false);
+        disabledCreate(false);
+    }
+
+    function eventCancal() {
+        $('#btnCancel').on('click', claerEdit);
+    }
+
+    function hiddenCrateBlock(h) {
+        if (h)
+            $('#CrateBlock').addClass('hidden');
+        else
+            $('#CrateBlock').removeClass('hidden');
+    }
+
+    function disabledBtnConfirm() {
+        OrderGridV.find('#btnConfirm').prop('disabled', $('#list tbody input[type=checkbox]:checked').length == 0);
+    }
+
+    function disabledCreate(disabled) {
+        $('#OrderGridV :input').attr('disabled', disabled);
+    }
+
+</script>

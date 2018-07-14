@@ -1,0 +1,152 @@
+﻿@model ShipperQueryViewModel
+
+<div class="row">
+    @using (Ajax.BeginForm(new AjaxOptions()
+    {
+        Url = Url.Action("Grid"),
+        UpdateTargetId = "GridV",
+        OnSuccess = "SelectReady"
+    }))
+    {
+        @Html.AccordionBuilder(@<text>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-2">
+                        @Html.DateBoxBuilder(m => m.TradeDate_S, "出貨日期(起)")
+                    </div>
+                    <div class="col-md-2">
+                        @Html.DateBoxBuilder(m => m.TradeDate_E, "出貨日期(迄)")
+                    </div>
+                    <div class="col-md-2">
+                        @Html.AutoCompleteBuilder(m => m.Buyer, "買家", Shared.BuyerList())
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        @Html.ButtonBuilder(ButtonType.submit, "btnQuery", "查詢")
+                    </div>
+                </div>
+            </div>
+        </text>, "查詢")
+    }
+</div>
+<div class="row" style="margin-top: 0.5%;">
+    <div id="EditV" class="col-md-12"></div>
+</div>
+<div class="row" style="margin-top: 0.5%;" id="CrateBlock">
+    <div class="col-md-1" style="width: auto; padding-right: 0%;"><label for="AddBuyer">買家</label></div>
+    <div class="col-md-2" style="padding-right: 0%; padding-left: 0.5%; width: 15%;">@Html.AutoCompleteBuilder("AddBuyer", "買家", Shared.BuyerList())</div>
+    <div class="col-md-2" style="padding-left: 0.5%;">@Html.ButtonBuilder(ButtonType.button, "btnCreate", "新增")</div>
+</div>
+<div class="row" style="margin-top: 0.5%;">
+    <div id="GridV" class="col-md-12"></div>
+</div>
+
+<script>
+    var EditV, GridV;
+
+    $(function () {
+        EditV = $('#EditV');
+        GridV = $('#GridV');
+
+        loadGrid();
+
+        $('#btnCreate').on('click', function () {
+            var query = $('#AddBuyer').val();
+            if (query == "")
+                alert("請輸入欲出貨之買家代碼或名稱.");
+            else
+                GridV.load('@Url.Action("Create")', { xBuyer: query }, CreateReady);
+        });
+    });
+
+    function loadGrid() {
+        //GridV.load('@Url.Action("Grid")', SelectReady);
+        claerEdit();
+        $('#btnQuery').click();
+    }
+
+    function CreateReady() {
+        disabledBtnConfirm();
+        $('#btnConfirm').on('click', function () {
+            var xNoList = Array();
+            $('#list tbody input[type=checkbox]:checked').each(function (i, v) {
+                xNoList.push($(v).data('transno'));
+            });
+            EditV.load('@Url.Action("CreateConfirm")', { xTransNos: xNoList }, ConfirmReady);
+            hiddenCrateBlock(true);
+        });
+
+        $('#checkAll').on('click', function () {
+            var xChecked = $("#checkAll").prop("checked");
+            $('#list tbody input[type=checkbox]').each(function () {
+                $(this).prop("checked", xChecked);
+            });
+            disabledBtnConfirm();
+        });
+
+        $('#list tbody input[type=checkbox]').on('click', disabledBtnConfirm);
+
+        $('#btnConfirmCancel').on('click', function () {
+            GridV.empty();
+            claerEdit();
+            hiddenCrateBlock(false);
+        });
+    }
+
+    function ConfirmReady() {
+        EditV.find('#TransNo, #Buyer').attr('readonly', true);
+        disabledCreate(true);
+        eventCancal();
+    }
+
+    function SelectReady() {
+        $('#list tbody tr').on('click', function () {
+            EditV.load('@Url.Action("Edit")', { xTransNo: $(this).find('td:eq(0)').text() }, EditReady);
+        });
+        $('#AddBuyer').val('');
+    }
+
+    function EditReady() {
+        EditV.find('#TransNo, #Buyer').attr('readonly', true);
+
+        eventCancal();
+        $('#btnDelete').on('click', function () {
+            $.post('@Url.Action("Delete")', { xTransNo: EditV.find('#TransNo').val() }, onSaved);
+        });
+
+        hiddenCrateBlock(true);
+    }
+
+    function onSaved(d) {
+        alert(d);
+        loadGrid();
+        claerEdit();
+    }
+
+    function claerEdit() {
+        EditV.empty();
+        hiddenCrateBlock(false);
+        disabledCreate(false);
+    }
+
+    function eventCancal() {
+        $('#btnCancel').on('click', claerEdit);
+    }
+
+    function hiddenCrateBlock(h) {
+        if (h)
+            $('#CrateBlock').addClass('hidden');
+        else
+            $('#CrateBlock').removeClass('hidden');
+    }
+
+    function disabledBtnConfirm() {
+        GridV.find('#btnConfirm').prop('disabled', $('#list tbody input[type=checkbox]:checked').length == 0);
+    }
+
+    function disabledCreate(disabled) {
+        $('#GridV :input').attr('disabled', disabled);
+    }
+
+</script>

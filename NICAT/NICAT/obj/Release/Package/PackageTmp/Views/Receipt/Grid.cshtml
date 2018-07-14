@@ -1,0 +1,23 @@
+﻿@model IEnumerable<Receipt>
+
+<div class="table-responsive">
+    <table id="list" class="table table-bordered table-striped table-hover table-condensed">
+        <thead>
+            <tr>
+                <th>付款編號</th>
+                <th>付款日期</th>
+                <th>金額</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var it in Model)
+            {
+                <tr class="alert-info">
+                    <td>@Html.DisplayFor(m => it.TransNo)</td>
+                    <td>@Html.DisplayFor(m => it.TradeDate)</td>
+                    <td>@Html.DisplayFor(m => it.TradeAmount)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

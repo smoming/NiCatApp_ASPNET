@@ -590,7 +590,7 @@ namespace NICAT.Models
                 return "請選擇已進貨之下單交易";
             foreach (var it in xPreData)
             {
-                it.ReceiptNo = item.TransNo;
+                it.PurchaseNo = item.TransNo;
                 _Entity.Entry(it).State = EntityState.Modified;
             }
 

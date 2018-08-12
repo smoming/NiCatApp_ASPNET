@@ -618,12 +618,12 @@ namespace NICAT.Models
             _Entity.Entry(item).State = EntityState.Deleted;
             foreach (var it in LookupOrder(new OrderQueryViewModel()
             {
-                ReceiptNo = item.TransNo,
+                PurchaseNo = item.TransNo,
                 IsPaid = true,
                 IsPurchased = true
             }))
             {
-                it.ReceiptNo = string.Empty;
+                it.PurchaseNo = string.Empty;
                 _Entity.Entry(it).State = EntityState.Modified;
             }
 

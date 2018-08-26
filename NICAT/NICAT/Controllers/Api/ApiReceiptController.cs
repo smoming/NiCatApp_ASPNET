@@ -116,6 +116,8 @@ namespace NICAT.Controllers
             {
                 return NotFound();
             }
+            if (_SVC.LookupOrder(new OrderQueryViewModel() { ReceiptNo = id }).Any(a => a.PurchaseNo.IsNotNullOrEmpty()))
+                return BadRequest("不可刪除已進貨交易");
 
             await _SVC.DeleteReceipt(_SVC.GetReceipt(id));
             return Ok(receipt);

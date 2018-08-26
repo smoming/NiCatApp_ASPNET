@@ -21,13 +21,14 @@ namespace NICAT.Controllers
         private GBService _SVC = new GBService();
 
         // GET: api/ApiOrders
-        public List<OrderDTOs> GetOrder(DateTime? StartDate, DateTime? EndDate, string CommodityID)
+        public List<OrderDTOs> GetOrder(DateTime? StartDate, DateTime? EndDate, string CommodityID, string ReceiptNo)
         {
             return MapperConfig.mapper.Map<List<OrderDTOs>>(_SVC.LookupOrder(new OrderQueryViewModel()
             {
                 TradeDate_S = StartDate,
                 TradeDate_E = EndDate,
-                CommodityID = CommodityID
+                CommodityID = CommodityID,
+                ReceiptNo = ReceiptNo
             }));
         }
 

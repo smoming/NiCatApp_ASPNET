@@ -32,6 +32,15 @@ namespace NICAT.Controllers
             }));
         }
 
+        [HttpGet, Route("api/ApiOrders/HavingReceipt")]
+        public List<OrderDTOs> HavingReceipt(string ReceiptNo)
+        {
+            return MapperConfig.mapper.Map<List<OrderDTOs>>(_SVC.LookupOrder(new OrderQueryViewModel()
+            {
+                ReceiptNo = ReceiptNo
+            }));
+        }
+
         // GET: api/ApiOrders/GetUnPaid
         [HttpGet, Route("api/ApiOrders/GetUnPaid")]
         public List<OrderDTOs> GetUnPaid()
